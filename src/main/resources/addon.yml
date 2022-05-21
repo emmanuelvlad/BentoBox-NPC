@@ -1,0 +1,12 @@
+name: NPC
+main: me.evlad.npc.NPCAddon
+version: ${version}${build.number}
+api-version: '1.18'
+repository: "emmanuelvlad/BentoBox-NPC"
+metrics: true
+icon: VILLAGER_SPAWN_EGG
+
+authors:
+  - evlad
+
+softdepend: Boxed

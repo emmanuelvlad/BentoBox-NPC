@@ -1,0 +1,5 @@
+# Config file for NPC addon
+
+# Disabled Game Mode Addons
+# NPCs will not work in these game modes
+disabled-gamemodes: []

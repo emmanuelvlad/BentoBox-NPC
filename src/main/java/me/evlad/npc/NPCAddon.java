@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import me.evlad.npc.dataobjects.NPCDatas;
+import me.evlad.npc.dataobjects.NPCObject;
 import me.evlad.npc.listeners.NPCListener;
-import org.bukkit.plugin.java.JavaPlugin;
+import me.evlad.npc.managers.NPCManager;
 import org.eclipse.jdt.annotation.NonNull;
 import world.bentobox.bentobox.api.addons.Addon;
 import world.bentobox.bentobox.database.Database;
-import me.evlad.npc.Settings;
 
 public final class NPCAddon extends Addon {
     private Settings settings;
     private boolean hooked;
     private Database database;
+    private NPCManager manager;
 
     @Override
     public void onLoad() {
@@ -34,6 +34,7 @@ public final class NPCAddon extends Addon {
         }
 
         List<String> hookedGameModes = new ArrayList<>();
+        this.manager = new NPCManager(this);
 
         getPlugin().getAddonsManager().getGameModeAddons().stream()
                 .filter(g -> !settings.getDisabledGameModes().contains(g.getDescription().getName()))
@@ -50,7 +51,7 @@ public final class NPCAddon extends Addon {
                 });
 
         if (this.hooked) {
-            this.database = new Database<>(this, NPCDatas.class);
+            this.database = new Database<>(this, NPCObject.class);
             this.registerListener(new NPCListener(this));
             this.log("NPC addon enabled");
         } else {
@@ -79,14 +80,19 @@ public final class NPCAddon extends Addon {
         return settings;
     }
 
-    public NPCDatas getNPCs(@NonNull String targetIsland) {
+    public NPCManager getManager() { return manager; }
+
+    public List<NPCObject> getNPCs(@NonNull String targetIsland) {
 //        NPCDatas npcs = this.upgradesCache.get(targetIsland);
 //        if (upgradesData != null)
 //            return upgradesData;
-        NPCDatas data = this.database.objectExists(targetIsland) ?
-                (NPCDatas) Optional.ofNullable(this.database.loadObject(targetIsland)).orElse(new NPCDatas(targetIsland)) :
-                new NPCDatas(targetIsland);
+        List<NPCObject> npcs = manager.getNPCsOnIsland(targetIsland);
+
+        return npcs;
+//        NPCObject data = this.database.objectExists(targetIsland) ?
+//                (NPCObject) Optional.ofNullable(this.database.loadObject(targetIsland)).orElse(new NPCObject(targetIsland)) :
+//                new NPCObject(targetIsland);
 //        this.upgradesCache.put(targetIsland, data);
-        return data;
+//        return data;
     }
 }
